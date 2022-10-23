@@ -11,38 +11,45 @@
             {{ bootstrap.load_css() }}
         {% endblock %}
         {% endblock %}
+       
 
 <title>{% block title %}{% endblock %} - SwitchFX</title>
 </head>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<nav>
-    <h1> SwitchFX</h1>
-    <ul>
-        {% if g.user %}
-        <li><span>Username: {{g.user['user_name']}}</span>
-        <li><span>Email: {{g.user['email']}}</span>
-        <li><span>Name: {{g.user['first_name']}}, {{g.user['last_name']}}</span>
-        <li><a href="{{ url_for('auth.logout')}}">Log Out</a>
-        {% else %}
-        <li><a href="{{ url_for('auth.register') }}">Register</a>
-        <li><a href="{{ url_for('auth.login') }}">Log In</a>
-        {% endif %}
-    </ul>
+
+{% from 'bootstrap5/nav.html' import render_nav_item %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="navbar-nav mr-auto">
+        {{ render_nav_item('index', 'Home') }}
+        {{ render_nav_item('auth.register', 'Signup') }}
+        {{ render_nav_item('auth.login', 'Login') }}
+        {{ render_nav_item('auth.logout', 'Logout') }}
+    </div>
 </nav>
 
-<body>
+<body class="bg-light">
 
-<section class="content">
+
     <header>
         {% block header %}{% endblock %}
     </header>
+    <!-- Errors -->
     {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }} </div>
+    <div class="flash container">
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+        <div>
+            {{ message }} 
+        </div>
+        </div>
+    </div>
+
     {% endfor %}
     {% block content %}{% endblock %}
 
    
-</section>
+
+
 </body>
 </html>

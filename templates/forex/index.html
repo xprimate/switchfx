@@ -1,31 +1,53 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Forex{% endblock %}</h1>
+  <h1>{% block title %}Foreign Exchange Requests{% endblock %}</h1>
   {% if g.user %}
-    <a class="action" href="{{ url_for('forex.create') }}">New</a>
+    <a class="action" href="{{ url_for('forex.create') }}">Post a forex request</a>
   {% endif %}
 {% endblock %}
 
 {% block content %}
-  {% for post in posts %}
-    <article class="post">
-      <header>
-        <div>
-            
-            <!--  List of forex post-->
-          <h1>{{ post['title'] }}</h1>
-          <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
-        </div>
-        {% if g.user['id'] == post['author_id'] %}
-          <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
-        {% endif %}
-      </header>
-      <p class="body">{{ post['body'] }}</p>
-    </article>
-    {% if not loop.last %}
-      <hr>
+        <div class="p-2">
 
-    {% endif %}
-  {% endfor %}
+          {% for forex_threads in forex_thread %}
+          <div class="about">user {{ forex_threads['user_name'] }} {{ forex_threads['amount'] }} - 
+            ExRate-{{ forex_threads['exchange_rate_cury'] }} {{ forex_threads['created_on'] }}
+            {{ forex_threads['ip'] }}
+          </div>
+          {% endfor %}
+            <!--  List of forex post-->
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">username</th>
+                  <th scope="col">Exchange</th>
+                  <th scope="col">For</th>
+                  <th scope="col">Exchange rate</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Pay method</th>
+                </tr>
+              </thead>
+              <tbody class="table-striped">
+                <tr>
+                  <th>cooljay</th>
+                  <td>USD</td>
+                  <td>CAD</td>
+                  <td>0.70 USD/CAD</td>
+                  <td>20000</td>
+                  <td>Bank, Paypal..</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+        <a href="{{ url_for('index') }} ?limit={{ row_count }}"><button>More</button></a>
+        <nav aria-label="Forex Thread pagination">
+          <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul>
+        </nav>
 {% endblock %}

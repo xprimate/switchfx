@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Exchange Post{% endblock %}</h1>
+  <br>
+{% endblock %}
+
+<!-- Exchange thread post starts -->
+{% block content %}  
+
+<div class="container">
+<div class="col-md-12">
+                  <div class="modal-content">
+                      <div class="modal-body">
+
+<!-- Exchange form Starts -->                        
+<form class="row g-3" id="exchange_form"  method="POST" >
+  <input type="hidden" name="cury" value="nothing">
+    <div class="col-md-6 mb-4">
+        <label for="base_currency" class="form-label">Exchange</label>
+        <select id="base_currency" required class="form-select" name="base_currency" >
+          <option selected value="non">Choose Currency</option>
+          <option value="dollar">USD(US Dollar)</option>
+           <option value="naira">NGN(Nigeria Naira)</option>
+            <option value="cad">CAD(Canadian Dollar)</option>
+             <option value="gbp">GBP(British Pounds)</option>
+        </select>
+      </div>
+    
+      <div class="col-md-6 mb-4">
+        <label for="quote_currency" class="form-label">For</label><br>
+        <select id="quote_currency" required class="form-select" name="quote_currency" onchange="amountToBeSent()">
+          <option selected value="non">Choose Currency</option>
+         <option value="dollar">USD(US Dollar)</option>
+           <option value="naira">NGN(Nigeria Naira)</option>
+            <option value="cad">CAD(Canadian Dollar)</option>
+             <option value="gbp">GBP(British Pounds)</option>
+        </select>
+      </div>
+    
+      <div class="col-md-6">
+        <label for="amount" class="form-label">Amount</label>
+        <input type="number" class="form-control" id="amount" required name="send_amount" 
+        onfocus="rateDropdown()" onkeyup="amountToBeSent()"  onkeypress='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'  min="1"  max="50000000000">
+      </div>
+    
+      <div class="col-md-6">
+         <label for="exchange_rate" class="form-label ">Your Exchange rate</label>
+    
+          <div class="col-md-12 d-flex  ">
+          <input  class="form-control" required id="exchange_rate" name="exchange_rate" onkeyup="amountToBeSent()" 
+          onkeydown="rateDropdown()" onkeypress='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)' ><b>/</b>
+       <select id="exchange_rate_cury" value = "working" required class="form-select" name="exchange_rate_cury" onchange="amountToBeSent()" >
+        
+        </select>
+    </div>
+      </div>
+    
+
+      <div class="col-md-6">
+      <div class="input-group mb-3  input-group-lg" >
+      <input type="text" readonly id="amount_to_be_sent" class="form-control" aria-label="Amout that will be sent" aria-describedby="basic-addon2" > 
+      <span class="input-group-text" >Will be exchanged</span>
+      <button type="reset" name="bt_reset" class="btn btn-primary" onclick="resetInputs()" value="reset">Reset</button>
+    </div>
+    </div>
+      
+      <!-- Send options start -->
+      <div class="col-md-12">
+        <label for="payment_option" class="form-label">Payment Options:</label>
+      
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox"  id="bank_deposit" name="payment" value="Bank Deposit">
+        <label class="form-check-label" for="bank_deposit">Bank Deposit</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox"  id="paypal" name="payment" value="Paypal">
+        <label class="form-check-label" for="paypal">Paypal</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox"  id="debit_credit" name="payment" value="Debit/Credit card">
+        <label class="form-check-label" for="debit_credit">Debit/Credit card</label>
+
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox"  id="online" name="payment" value="online">
+          <label class="form-check-label" for="online">Online</label>
+        </div>
+
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="payment" id="others" value="others">
+          <label class="form-check-label" for="others">Others</label>
+        </div>
+
+      </div>
+    </div>
+    <!-- Send options end -->
+    
+  
+    
+      <div class="col-12 ml-4" id="comDiv">
+        <label for="comment">Comment</label>
+        <textarea class="form-control" id="comment" rows="3" placeholder="Additional information" name="comment"></textarea>
+      </div>
+    
+      
+      <div class="col-12 d-flex justify-content-center mt-3">
+        <button type="submit" name="bt_send" class="btn btn-primary" value="send"
+        >Post</button>
+      </div>
+      <p hidden id="para" value="non">ttt</p> 
+
+    </form>
+    <!-- Exchange form Ends -->
+</div>
+</div>
+</div>
+</div>
+
+
+<script>
+
+var focusCount = 0;
+selectBox = document.getElementById("exchange_rate_cury");
+
+function rateDropdown() {
+  
+
+    focusCount += 1
+    var selectBox = document.getElementById("exchange_rate_cury");
+    var selectBox = document.getElementById("exchange_rate_cury");
+    var base_currency = document.getElementById("base_currency").value;
+    var quote_currency = document.getElementById("quote_currency").value;
+  
+    let user_rate = document.getElementById("exchange_rate").value;
+  
+    if(base_currency && quote_currency  !=='' && focusCount <= 1){
+      let option1 = new Option(quote_currency, quote_currency);
+      selectBox.add(option1);
+  
+      let option2 = new Option(base_currency, base_currency);
+      selectBox.add(option2);
+      console.log(focusCount);
+  
+    }
+    
+  }
+  
+  
+  function amountToBeSent() {
+  
+    let base_currency = document.getElementById("base_currency").value;
+    let quote_currency = document.getElementById("quote_currency").value;
+    let amount = document.getElementById("amount").value;
+    let user_rate = document.getElementById("exchange_rate").value;
+    
+    let exchange_rate_cury = document.getElementById("exchange_rate_cury").value;
+    
+    if (base_currency && quote_currency !== '') {
+
+     
+        if (exchange_rate_cury == quote_currency) { 
+        
+        
+
+      let amount_to_be_sent = amount * user_rate; 
+         
+      document.getElementById("amount_to_be_sent").value =  amount_to_be_sent.toFixed(2) + ' '+ quote_currency;
+      
+    }
+    else if(exchange_rate_cury == base_currency) 
+    {
+    let amount_to_be_sent = amount / user_rate; 
+    document.getElementById("amount_to_be_sent").value =  amount_to_be_sent.toFixed(2) + ' ' + base_currency;
+    }
+    
+  }
+  }
+  
+  function removeAll() {
+    selectBox = document.getElementById("exchange_rate_cury");
+    while (selectBox.options.length > 0) {
+       selectBox.remove(0);
+       
+    }
+}
+
+  function resetInputs(selectBox){
+   removeAll();
+   document.getElementById('amount').value = '';
+   document.getElementById('exchange_rate').value = '';
+   document.getElementById('amount_to_be_sent').value = '';
+   focusCount  = 0;
+   //console.log(focusCount);
+   
+  }
+
+  //Allows only numbers
+  function numnersOnly(e) {
+    let char = String.fromCharCode(e.keyCode);
+    if (/^[0-9]*$/.test(char)) return true;
+    else e.preventDefault();
+}
+
+function make(){
+const para = document.createElement("p");
+const node = document.createTextNode("This is new.");
+para.appendChild(node);
+const element = document.getElementById("comDiv");
+element.appendChild(para);
+}
+
+
+</script>
+{% endblock %}
