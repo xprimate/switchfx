@@ -4,44 +4,45 @@ DROP TABLE IF EXISTS forex_thread_post;
 
 CREATE TABLE `user` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `user_name` TEXT(100) UNIQUE NOT NULL,
-  `first_name` TEXT(100), 
-  `last_name` TEXT(100),
-  `email` TEXT(254) UNIQUE NOT NULL,
-  `password` TEXT(100),
-  `created_on` TIMESTAMP,
-  `updated_on` TIMESTAMP,
-  `last_activity` TIMESTAMP,
-  `status` TEXT(100),
-  `user_status` TEXT(50),
-  `ip` INTEGER
+  `user_name` UNIQUE NOT NULL,
+  `first_name` NOT NULL, 
+  `last_name`,
+  `email` UNIQUE NOT NULL,
+  `password` NOT NULL,
+  `created_on`,
+  `updated_on`,
+  `last_activity`,              
+  `status`,
+  `user_status`,
+  `ip`
 );
 
 CREATE TABLE `forex_thread` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `user_id` INTEGER,
-  `base_currency` TEXT(100),
-  `quote_currency` TEXT(100),
-  `amount` DECIMAL NOT NULL,
-  `exchange_rate` DECIMAL NOT NULL,
-  `payment_method` TEXT(50),
-  `comment` TEXT(100),
-  `ip` INTEGER,
-  `user_name` TEXT(100) NOT NULL,
-  `status` TEXT(100),
-  `created_on` timestamp,
-  `updated_on` timestamp,
+  `user_id` NOT NULL,
+  `base_currency` NOT NULL,
+  `quote_currency` NOT NULL,
+  `amount` REAL NOT NULL,
+  `exchange_rate` REAL NOT NULL,
+  'exchange_rate_cury' NOT NULL,
+  `payment_method` NOT NULL,
+  `comment`,
+  `ip`,
+  `user_name` NOT NULL,
+  `status`,
+  `created_on`,
+  `updated_on`,
   FOREIGN KEY (`user_id`) REFERENCES `user`(`id`)
 );
 
 CREATE TABLE `forex_thread_post` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `content` TEXT(100),
-  `thread_id` INTEGER,
-  `created_on` timestamp,
-  `user_id` INTEGER,
-  `status` TEXT(50),
-  `ip` INTEGER,
+  `content`,
+  `thread_id`,
+  `created_on`,
+  `user_id`,
+  `status`,
+  `ip`,
   FOREIGN KEY (`thread_id`) REFERENCES `forex_thread`(`id`)
 );
 
