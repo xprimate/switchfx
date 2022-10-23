@@ -27,11 +27,13 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
 
-    #Register the Blueprint
+    #Register  Authentication Blueprint
     from . import auth
     app.register_blueprint(auth.bp)
 
-    #Register Bootstrap4
+
+
+    #Register Bootstrap5
     bootstrap = Bootstrap5(app)
 
     #Register the index page
