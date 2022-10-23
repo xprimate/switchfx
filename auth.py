@@ -1,6 +1,8 @@
 import functools
 import re 
 from datetime import datetime
+from switchfx.forms import LoginForm
+from switchfx.forms import RegisterForm
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
@@ -23,6 +25,7 @@ def email_valide(email):
 #User Registration
 @bp.route('register', methods=('GET', 'POST'))
 def register():
+    form = RegisterForm()
     if request.method == 'POST':
         user_name = request.form['user_name']
         first_name = request.form['first_name']
@@ -65,35 +68,39 @@ def register():
             else:
                 return redirect(url_for("auth.login"))
         flash(error)
-    return render_template('auth/register.html')
+    return render_template('auth/register.html', form = form)
 
 @bp.route('login', methods=('GET', 'POST'))
 def login():
+    form = LoginForm()
     if request.method == 'POST':
         user_name = request.form['user_name']
         password = request.form['password']
         
+
         db = get_db()
         error = None
         
         # Fetch user record with username or email if email is typed in
         user = db.execute(
-            "SELECT * FROM user WHERE 'user_name' = ?", (user_name,)).fetchone()
-        
-            
+            'SELECT * FROM user WHERE user_name = ?', (user_name,)
+        ).fetchone()
+
         if user is None:
-            error = 'Incorrect Username/Email.'
+            error = 'Incorrect Username/pasword.'
         elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
+            error = 'Incorrect username/password.'
+
         if error is None:
             session.clear()
             session['user_id'] = user['id']
+            session['user_name'] = user['user_name'] 
             session['user_firstname'] = user['first_name']
             session['user_lastname'] = user['last_name'] 
-        return redirect(url_for('index'))
+            return redirect(url_for('index'))
 
         flash(error)
-    return render_template('auth/login.html')
+    return render_template('auth/login.html', form = form)
 
 @bp.before_app_request
 def load_logged_in_user():
@@ -109,7 +116,7 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear
-    return redirect(url_for('index'))
+    return redirect(url_for('auth.login'))
 
 def login_required(view):
     @functools.wraps(view)
