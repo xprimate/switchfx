@@ -14,7 +14,7 @@ class ForexThread():
         lm = lm
         of =of
         forex_thread = self.db.execute(
-        'SELECT u.first_name, ft.base_currency, ft.quote_currency, ft.amount, ft.exchange_rate, ft.payment_method, \
+        'SELECT u.first_name, ft.base_currency, ft.quote_currency, ft.exchange_rate_cury, ft.base_exchange, ft.amount, ft.exchange_rate, ft.payment_method, \
         ft.comment, ft.user_name, ft.created_on'
         ' FROM forex_thread ft JOIN user u ON ft.user_id=u.id'
         ' ORDER BY ft.created_on DESC LIMIT ? OFFSET ? ', (lm,of,) 
@@ -24,7 +24,32 @@ class ForexThread():
 
     def row_count(self):
         row_count = self.db.execute('SELECT COUNT(*) FROM forex_thread')
-        return row_count
+        results = row_count.fetchone()
+        total =  results[0]
+        total = total + 40 # added to simulate large row count
+        return total
+    
+    def paginate(self, off_set=5, row_count=100, lm=10 ):
+         link_array = list(range(off_set, row_count, lm))
+         last_element = link_array[-1]
+         #check to see if additonal element(offset) should be appended to the list
+         if ( row_count > last_element):
+            extra_elem = row_count - last_element
+            extra_elem = extra_elem + last_element
+            link_array.append(extra_elem)
+            return link_array
+         else:
+            link_array = list(range(off_set, row_count, lm))
+            return link_array
+    
+    def next_off_set(self, link_array,  url_off_set):
+        if(link_array[3] == url_off_set):
+            off_set = url_off_set
+            return off_set
+        else:
+            return False
+
+        
 
 
             
