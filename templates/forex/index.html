@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Foreign Exchange Requests{% endblock %}</h1>
+  <h1>{% block title %}Foreign Exchange{% endblock %}</h1>
   {% if g.user %}
     <a class="action" href="{{ url_for('forex.create') }}">Post a forex request</a>
   {% endif %}
@@ -10,15 +10,13 @@
 {% block content %}
         <div class="p-2">
 
-          {% for forex_threads in forex_thread %}
-          <div class="about">user {{ forex_threads['user_name'] }} {{ forex_threads['amount'] }} - 
-            ExRate-{{ forex_threads['exchange_rate_cury'] }} {{ forex_threads['created_on'] }}
-            {{ forex_threads['ip'] }}
-          </div>
-          {% endfor %}
+          
+          <div class="about">
+         
             <!--  List of forex post-->
-            <table class="table">
+            <table class="table table table-striped">
               <thead>
+                
                 <tr>
                   <th scope="col">username</th>
                   <th scope="col">Exchange</th>
@@ -26,28 +24,45 @@
                   <th scope="col">Exchange rate</th>
                   <th scope="col">Amount</th>
                   <th scope="col">Pay method</th>
+                  <th scope="col">Note</th>
                 </tr>
               </thead>
               <tbody class="table-striped">
+                {% for forex_threads in forex_thread %}
                 <tr>
-                  <th>cooljay</th>
-                  <td>USD</td>
-                  <td>CAD</td>
-                  <td>0.70 USD/CAD</td>
-                  <td>20000</td>
-                  <td>Bank, Paypal..</td>
+                  <th>{{ forex_threads['user_name'] }}</th>
+                  <td>{{ forex_threads['base_currency'] }}</td>
+                  <td>{{ forex_threads['quote_currency'] }}</td>
+                  <td>{{ forex_threads['exchange_rate'] }}/{{ forex_threads['exchange_rate_cury'] }}</td>
+                  <td>{{ forex_threads['amount'] }}</td>
+                  <td>{{ forex_threads['payment_method'] }}</td>
+                  <td>{{ forex_threads['comment'] }}</td>
+                  {% endfor %}
                 </tr>
               </tbody>
             </table>
+          </div>
+       
         </div>
-        <a href="{{ url_for('index') }} ?limit={{ row_count }}"><button>More</button></a>
+        
+        <a href="{{ url_for('index')}}"><button>More</button></a>
         <nav aria-label="Forex Thread pagination">
+  
           <ul class="pagination">
-            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}">Home</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=5&offset={{link_array[0]}}&prev={{link_array[0]}}">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=5&offset={{link_array[0]}}">1</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=5&offset={{link_array[1]}}">2</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=5&offset={{link_array[2]}}">3</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=5&offset={{link_array[3]}}">4</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=5&offset={{link_array[0]}}&next={{link_array[3]}}">Next</a></li>
           </ul>
+         
         </nav>
+        <p>
+          {% for link_arrays in link_array %}
+          {{link_arrays}}
+        </p>
+        {% endfor %}
+
 {% endblock %}

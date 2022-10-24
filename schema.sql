@@ -25,6 +25,7 @@ CREATE TABLE `forex_thread` (
   `amount` REAL NOT NULL,
   `exchange_rate` REAL NOT NULL,
   'exchange_rate_cury' NOT NULL,
+  'base_exchange' NOT NULL,
   `payment_method` NOT NULL,
   `comment`,
   `ip`,

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Exchange Post{% endblock %}</h1>
+  <h1>{% block title %}Post your Foreign Exchange{% endblock %}</h1>
   <br>
 {% endblock %}
 
@@ -48,18 +48,19 @@
          <label for="exchange_rate" class="form-label ">Your Exchange rate</label>
     
           <div class="col-md-12 d-flex  ">
-          <input  class="form-control" required id="exchange_rate" name="exchange_rate" onkeyup="amountToBeSent()" 
-          onkeydown="rateDropdown()" onkeypress='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)' ><b>/</b>
-       <select id="exchange_rate_cury" value = "working" required class="form-select" name="exchange_rate_cury" onchange="amountToBeSent()" >
+          <input  class="form-control"  required id="exchange_rate" name="exchange_rate" onkeyup="amountToBeSent()" 
+          onkeydown="rateDropdown()" onkeypress='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'>
+       <select id="exchange_rate_cury" value = "" required class="form-select" name="exchange_rate_cury" onchange="amountToBeSent()" >
         
         </select>
+        <b>/</b><input  readonly class="input-group-text col-xs-4" name="base_exchange" id="base_exchange">
     </div>
       </div>
     
 
       <div class="col-md-6">
       <div class="input-group mb-3  input-group-lg" >
-      <input type="text" readonly id="amount_to_be_sent" class="form-control" aria-label="Amout that will be sent" aria-describedby="basic-addon2" > 
+      <input type="text" readonly id="amount_to_be_sent" class="form-control" aria-label="Amout that will be sent" aria-describedby="amount_to_be_sent" > 
       <span class="input-group-text" >Will be exchanged</span>
       <button type="reset" name="bt_reset" class="btn btn-primary" onclick="resetInputs()" value="reset">Reset</button>
     </div>
@@ -98,7 +99,7 @@
   
     
       <div class="col-12 ml-4" id="comDiv">
-        <label for="comment">Comment</label>
+        <label for="comment">Note</label>
         <textarea class="form-control" id="comment" rows="3" placeholder="Additional information" name="comment"></textarea>
       </div>
     
@@ -139,7 +140,9 @@ function rateDropdown() {
   
       let option2 = new Option(base_currency, base_currency);
       selectBox.add(option2);
-      console.log(focusCount);
+      //console.log(focusCount);
+
+      //document.getElementById("base_exchange").innerHTML = quote_currency;
   
     }
     
@@ -160,8 +163,8 @@ function rateDropdown() {
      
         if (exchange_rate_cury == quote_currency) { 
         
-        
-
+      document.getElementById("base_exchange").value = base_currency
+  
       let amount_to_be_sent = amount * user_rate; 
          
       document.getElementById("amount_to_be_sent").value =  amount_to_be_sent.toFixed(2) + ' '+ quote_currency;
@@ -169,8 +172,12 @@ function rateDropdown() {
     }
     else if(exchange_rate_cury == base_currency) 
     {
+    
+    document.getElementById("base_exchange").value = quote_currency;
+
+    
     let amount_to_be_sent = amount / user_rate; 
-    document.getElementById("amount_to_be_sent").value =  amount_to_be_sent.toFixed(2) + ' ' + base_currency;
+    document.getElementById("amount_to_be_sent").value =  amount_to_be_sent.toFixed(2) + ' ' + quote_currency;
     }
     
   }
@@ -189,6 +196,7 @@ function rateDropdown() {
    document.getElementById('amount').value = '';
    document.getElementById('exchange_rate').value = '';
    document.getElementById('amount_to_be_sent').value = '';
+   document.getElementById("base_exchange").innerHTML = '';
    focusCount  = 0;
    //console.log(focusCount);
    
@@ -200,15 +208,6 @@ function rateDropdown() {
     if (/^[0-9]*$/.test(char)) return true;
     else e.preventDefault();
 }
-
-function make(){
-const para = document.createElement("p");
-const node = document.createTextNode("This is new.");
-para.appendChild(node);
-const element = document.getElementById("comDiv");
-element.appendChild(para);
-}
-
 
 </script>
 {% endblock %}
