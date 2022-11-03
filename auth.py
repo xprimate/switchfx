@@ -95,6 +95,7 @@ def login():
             session.clear()
             session['user_id'] = user['id']
             session['user_name'] = user['user_name'] 
+            session['email'] = user['email'] 
             session['user_firstname'] = user['first_name']
             session['user_lastname'] = user['last_name'] 
             return redirect(url_for('index'))
@@ -115,7 +116,7 @@ def load_logged_in_user():
 
 @bp.route('/logout')
 def logout():
-    session.clear
+    session.clear()
     return redirect(url_for('auth.login'))
 
 def login_required(view):

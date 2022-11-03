@@ -9,7 +9,7 @@ from werkzeug.exceptions import abort
 from switchfx.auth import login_required
 from switchfx.auth import client_ip
 from switchfx.db import get_db
-from switchfx.query import ForexThread
+from switchfx.query import PostComment, ForexThread
 
 bp = Blueprint('forex', __name__)
 
@@ -54,7 +54,12 @@ def isInt(lm, of):
          return True
     return False
 
-    
+# Get the thread id from the request url
+def get_thread_id(request_referrer):
+    referrer_url = request_referrer
+    thread_id = referrer_url[-1]
+    thread_id =  int(thread_id)
+    return thread_id
 
 @bp.route('/')
 def index():
@@ -172,3 +177,100 @@ def create():
             return redirect(url_for('forex.index'))
 
     return render_template('forex/create.html')
+
+
+@bp.route('/post_comment', methods=('GET', 'POST'))
+def post_comment():
+    if request.method == 'POST':
+        
+        comment        = request.form.get('comment')
+       
+        if  session.get('user_id'):
+            user_id = session.get('user_id')
+            user_name = session.get('user_name')
+            email = session.get('email')
+           
+        else:
+            user_id = 'NONE'
+            user_name = request.form.get('user_name')
+            email = request.form.get('email')
+            user_name_and_email = ''
+
+        error          = None
+
+        ip      = client_ip()
+        status  = 'ACTIVE'
+        created_on = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+        if not user_name:
+            error = 'Please Enter your Username.'
+          
+        elif not email:
+            error = 'Please enter your email.'
+        elif not comment:
+            error = 'Please write a comment.'
+        elif not get_thread_id(request.referrer):
+            error = "Issue with your request, please try again"
+        
+     
+
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            thread_id = get_thread_id(request.referrer)
+            avatar = PostComment.avatar(email, 128)
+            post_comment = PostComment.post_comment(db, comment, thread_id, created_on,
+            user_name, email, status, ip, avatar )
+
+            #flash(testing)
+
+            flash("Your comment is successful!")
+
+
+        return redirect(request.referrer)
+
+
+        if not post_comment:
+            flash('Sorry, something went wrong, try again later.')
+        elif not avatar:
+            flash('Sorry can not load avatar')
+
+        return redirect(request.referrer)
+
+            
+    
+    return redirect(request.referrer)
+
+
+@bp.route('/get_comment', methods=('GET', 'POST'))
+def get_comment():
+    
+    if  request.method == 'GET':
+            url_thread_id = request.args.get('thread_id')
+            url_thread_id = int(url_thread_id)
+
+            #Hide/require input if user is logged in or not
+            user_name_and_email = ''
+            input_required = 'required'
+            user_id = session.get('user_id')
+            if  user_id:
+                user_name_and_email = 'hidden'
+                input_required = ''
+            
+            db = get_db()
+            
+            # Fetch a single forex_thread_post
+            forex_thread_single = PostComment.get_forex_thread_single(db, url_thread_id)
+            forex_thread_comment = PostComment.get_forex_thread_comment(db, url_thread_id)
+            ## Add an if statement to catch error in "forex_thread_single" and "forex_thread_comment"
+            #flask(testing)
+            return render_template('forex/get_comment.html',  forex_thread_single = forex_thread_single,
+             forex_thread_comment = forex_thread_comment, user_name_and_email = user_name_and_email,
+              input_required = input_required,  len = len(forex_thread_comment))
+
+
+    return redirect(request.referrer)
+
+                
