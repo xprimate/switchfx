@@ -1,5 +1,8 @@
 from flask import request
+from hashlib import md5
 from switchfx.db import get_db 
+
+
 
 class ForexThread():
     #def __init__(self, db = db limit=10, offset=10, order = 'DESC'):
@@ -15,12 +18,14 @@ class ForexThread():
         of =of
         forex_thread = self.db.execute(
         'SELECT u.first_name, ft.base_currency, ft.quote_currency, ft.exchange_rate_cury, ft.base_exchange, ft.amount, ft.exchange_rate, ft.payment_method, \
-        ft.comment, ft.user_name, ft.created_on'
+        ft.comment, ft.user_name, ft.created_on, ft.id'
         ' FROM forex_thread ft JOIN user u ON ft.user_id=u.id'
         ' ORDER BY ft.created_on DESC LIMIT ? OFFSET ? ', (lm,of,) 
         ).fetchall()
 
         return forex_thread
+
+    
 
     def row_count(self):
         row_count = self.db.execute('SELECT COUNT(*) FROM forex_thread')
@@ -49,9 +54,34 @@ class ForexThread():
         else:
             return False
 
-        
+
+class PostComment():
+    
+    def post_comment(db, commment, thread_id, created_on,
+            user_name, email, status, ip, avatar):
+        db.execute(
+        "INSERT INTO forex_thread_post (comment, thread_id, created_on, user_name,\
+            email, status, ip, avatar)\
+            VALUES (?, ?, ?, ?, ?, ?, ?,?)",
+        (commment, thread_id, created_on, user_name, email, status, ip, avatar )
+        )
+        db.commit()
+        return True
+
+    def get_forex_thread_comment(db, thread_id):
+        forex_thread_comment = db.execute('SELECT comment, created_on, user_name, status, avatar FROM \
+         forex_thread_post WHERE thread_id = ? ORDER BY created_on  DESC LIMIT ? ', (thread_id, 100,)  ).fetchall()
+        return forex_thread_comment
+
+    def avatar(email='user@paidin.net', size=128):
+            digest = md5(email.lower().encode('utf-8')).hexdigest()
+            return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+                digest, size)
 
 
-            
-   
-        
+    def get_forex_thread_single(db, thread_id):
+       
+        forex_thread_single = db.execute(
+        'SELECT * from forex_thread WHERE id = ?', (thread_id,) 
+        ).fetchone()
+        return forex_thread_single
