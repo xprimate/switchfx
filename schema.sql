@@ -38,12 +38,16 @@ CREATE TABLE `forex_thread` (
 
 CREATE TABLE `forex_thread_post` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `content`,
-  `thread_id`,
+  `comment` NOT NULL,
+  `thread_id` NOT NULL,
   `created_on`,
   `user_id`,
+  'user_name' NOT NULL,
+  'email'     NOT NULL, 
   `status`,
   `ip`,
+  'avatar',
   FOREIGN KEY (`thread_id`) REFERENCES `forex_thread`(`id`)
 );
+
 
