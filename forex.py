@@ -150,9 +150,6 @@ def create():
             error = 'Please select at least on payment option'
         elif not base_exchange:
             error = '/ currency is required'
-
-        
-        #
         
         if error is not None:
             flash(error)

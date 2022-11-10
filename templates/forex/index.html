@@ -2,9 +2,7 @@
 
 {% block header %}
   <h1>{% block title %}Foreign Exchange{% endblock %}</h1>
-  {% if g.user %}
-    <a class="action" href="{{ url_for('forex.create') }}">Post a forex request</a>
-  {% endif %}
+  
 {% endblock %}
 
 {% block content %}
@@ -62,10 +60,6 @@
           </ul>
          
         </nav>
-        <p>
-          {% for link_arrays in link_array %}
-          {{link_arrays}}
-        </p>
-        {% endfor %}
+        
 
 {% endblock %}
