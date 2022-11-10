@@ -1,8 +1,10 @@
 import os
 from flask import Flask
 from flask_bootstrap import Bootstrap5
+from dotenv import load_dotenv
+from flask_mail import Mail
 
-
+mail_obj = Mail()
 # application factory
 def create_app(test_config=None):
     #create and configure the app
@@ -11,6 +13,11 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'switchfx.sqlite'),
     )
+    #app.config.from_object('testconfig')
+    app.config.from_pyfile('config.py')
+    
+    
+
     if test_config is None:
         #load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
@@ -31,6 +38,13 @@ def create_app(test_config=None):
     from . import auth
     app.register_blueprint(auth.bp)
 
+    #Register the mail sending Blue print
+    from . import mail
+    app.register_blueprint(mail.bp)
+    #mail.mail_init(app)
+    mail_obj.init_app(app)
+   
+    
 
 
     #Register Bootstrap5
@@ -40,6 +54,7 @@ def create_app(test_config=None):
     from . import forex
     app.register_blueprint(forex.bp)
     app.add_url_rule('/', endpoint='index')
+
        
 
     return app
