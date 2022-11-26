@@ -1,16 +1,32 @@
+import os
+from dotenv import load_dotenv
 import functools
 import re 
 from datetime import datetime
 from switchfx.forms import LoginForm
 from switchfx.forms import RegisterForm
 
+from switchfx.forms import ResetEmailForm
+from switchfx.forms import ResetPasswordForm
+from switchfx.mail import send_mails, reset_mail
+from itsdangerous import URLSafeTimedSerializer
+
+from werkzeug.exceptions import abort
+
+
+
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from switchfx.db import get_db
 
+load_dotenv()
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
+
+ts = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+
 
 #Client ip address
 def client_ip():
@@ -37,6 +53,8 @@ def register():
 
         if not user_name:
             error = 'Username is required.'
+        if len(user_name) < 4:
+            error = 'Username is too short'
         elif not password:
             error = 'Password is required.'
         elif not email:
@@ -85,7 +103,7 @@ def login():
         user = db.execute(
             'SELECT * FROM user WHERE user_name = ?', (user_name,)
         ).fetchone()
-
+       
         if user is None:
             error = 'Incorrect Username/pasword.'
         elif not check_password_hash(user['password'], password):
@@ -126,3 +144,60 @@ def login_required(view):
             return redirect(url_for('auth.login'))
         return view(**kwargs)
     return wrapped_view
+
+# Pasword Reset Email 
+@bp.route('reset', methods=["GET", "POST"])
+def reset():
+    form = ResetEmailForm()
+    db = get_db()
+
+   # if request.method == 'POST':
+    if form.validate_on_submit():
+        email = form.email.data
+        #user = User.query.filter_by(email=form.email.data).first_or_404()
+        users = db.execute(
+            'SELECT email, first_name FROM user WHERE email = ?', (email,)
+        ).fetchone()
+        
+        if users is None:
+            flash("Your email is not yet registered", "alert-warning")
+            return redirect(request.referrer)
+        else:
+            token = ts.dumps(email, salt='recover-key')
+            recovery_url = url_for('auth.resetpwd',token=token, _external=True)
+            flash("Mail sent, Please Check your Email for detail.", "alert-success")
+            reset_mail(users, recovery_url)
+      
+        
+
+        return redirect(url_for('index'))
+    return render_template('auth/reset.html', form=form)
+
+
+@bp.route('/resetpwd/<token>', methods=["GET", "POST"])
+def resetpwd(token):
+    try:
+        email = ts.loads(token, salt="recover-key", max_age=86400)
+    except:
+        abort(404)
+
+    form = ResetPasswordForm()
+    db = get_db()
+    
+    if form.validate_on_submit():
+        user = db.execute(
+            'SELECT email, first_name FROM user WHERE email = ?', (email,)
+        ).fetchone()
+        hash_paswd = generate_password_hash(form.password.data)
+        
+        db.execute(
+                'UPDATE user SET password = ?'
+                ' WHERE email = ?',
+                (hash_paswd, user['email'])
+            )
+        db.commit()
+        flash('Your Password has been updated Succefully', 'alert-success')
+    
+        return redirect(url_for("auth.login"))
+
+    return render_template('auth/pw_rst.html', form=form, token=token)
