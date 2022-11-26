@@ -99,7 +99,7 @@ def index():
 
 
     # @param 1 -limit @param 2 offset
-    forex_thread = ForexThread(get_db()).get_forex_thread(url_limit=100,url_off_set=1)
+    forex_thread = ForexThread(get_db()).get_forex_thread(url_limit=100,url_off_set=0)
     return render_template('forex/index.html', forex_thread=forex_thread, link_array=link_array)
 
 
@@ -281,8 +281,10 @@ def get_comment():
 
 
     return redirect(request.referrer)
+
 @login_required
 @bp.route('/user_forex', methods=('GET', 'POST'))
+@login_required
 def user_forex():
     
     if  request.method == 'GET':
@@ -290,9 +292,11 @@ def user_forex():
 
         return render_template('forex/user_forex.html', user_forex_thread= user_forex_thread)
 
-            
-@bp.route('/dash', methods=('GET', 'POST')) 
-def dash():
+
+# Admin Interface        
+@bp.route('/wkno9g68zqhy13yd5kxl', methods=('GET', 'POST')) 
+@login_required   
+def wkno9g68zqhy13yd5kxl():
         url_limit = 10
         url_off_set = 10
 
