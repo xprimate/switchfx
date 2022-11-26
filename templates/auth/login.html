@@ -2,7 +2,7 @@
 
 {% block content %}
 
-  <div class="container" >
+  <div class="container" id="container" >
   <h1>Sign In</h1>
     <form action="" method="post" >
         {{ form.hidden_tag() }}
@@ -14,12 +14,11 @@
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}
         </p>
-        <p>{{ form.remember() }} {{ form.remember.label }}</p>
         
-            <p>{{ form.submit() }}</p>
+            <p>{{ form.submit(class_="btn btn-primary") }}</p>
 
         </p>
     </form>
-
+  <a href="{{ url_for('auth.reset')}}"> Forgot password?</a>
   </div>
 {% endblock %}
