@@ -166,7 +166,7 @@ def reset():
         else:
             token = ts.dumps(email, salt='recover-key')
             recovery_url = url_for('auth.resetpwd',token=token, _external=True)
-            flash("Mail sent, Please Check your Email for detail.", "alert-success")
+            flash("Mail sent, Please Check your Email(and spam box) for detail.", "alert-success")
             reset_mail(users, recovery_url)
       
         
