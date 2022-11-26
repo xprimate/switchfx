@@ -3,13 +3,15 @@ from flask import (
 )
 from decimal import *
 from datetime import datetime
-from datetime import datetime
 from werkzeug.exceptions import abort
+
+from switchfx.admin import AppAdmin
 
 from switchfx.auth import login_required
 from switchfx.auth import client_ip
 from switchfx.db import get_db
 from switchfx.query import PostComment, ForexThread
+from switchfx.mail import send_mails, mail_thread_owner
 
 bp = Blueprint('forex', __name__)
 
@@ -57,7 +59,8 @@ def isInt(lm, of):
 # Get the thread id from the request url
 def get_thread_id(request_referrer):
     referrer_url = request_referrer
-    thread_id = referrer_url[-1]
+    thread_id = referrer_url.split("thread_id=",1)[1]
+    #thread_id = referrer_url[-1]
     thread_id =  int(thread_id)
     return thread_id
 
@@ -69,47 +72,34 @@ def index():
     url_off_set = request.args.get('off_set')
     url_next = request.args.get('next')
     url_prev = request.args.get('prev')
-     
-   
     #Returns the forex_thread row count
     row_count= forex_thread = ForexThread(get_db()).row_count()
-    
-    
     # Calculate the next offset to used when the "Next" Button is clicked
-   
-
     #Ensures that the request arges is a number and it is not None.
+
+    #REDO THIS WHO OFFSET AND PAGINATION ALGORITHM
     if not (isInt(url_limit, url_off_set) ):
          #Default limit and offset
-        url_limit = 5
-        url_off_set = 0
-    
-    
-    
+        url_limit = 100
+        url_off_set = 100
     #check for Next button click and recalculate the offset
     if(url_next != None):
         off_set = url_next
         url_off_set = off_set
     else:
-        off_set = 5
-        
-
+        off_set = 100
     if(url_prev != None):
         off_set = int(url_prev)
         print(url_prev)
         url_off_set = off_set
     else:
-        off_set =5
-
+        off_set =100
     #Generate the limit to go into each pagination button in a list
-    link_array = ForexThread(get_db()).paginate(off_set, row_count=100, lm=10)
+    link_array = ForexThread(get_db()).paginate(off_set, row_count=5000, lm=100)
 
-    
-    # for testing
-    url_limit = 20
 
     # @param 1 -limit @param 2 offset
-    forex_thread = ForexThread(get_db()).get_forex_thread(url_limit,url_off_set)
+    forex_thread = ForexThread(get_db()).get_forex_thread(url_limit=100,url_off_set=1)
     return render_template('forex/index.html', forex_thread=forex_thread, link_array=link_array)
 
 
@@ -130,6 +120,7 @@ def create():
 
         user_id = session.get('user_id')
         user_name = session.get('user_name')
+        user_email = session.get('email')
         ip      = client_ip()
         status  = 'ACTIVE'
         created_on = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -160,17 +151,19 @@ def create():
             ip = client_ip()
             status = 'ACTIVE'
             created_on = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
           
             db = get_db()
             db.execute(
                 "INSERT INTO forex_thread (user_id, base_currency, quote_currency, amount, exchange_rate,\
-                 exchange_rate_cury, base_exchange, payment_method, comment, ip, user_name, status, created_on)\
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                 exchange_rate_cury, base_exchange, payment_method, comment, ip, email, user_name, status, created_on)\
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (user_id, base_currency, quote_currency, amount_to_be_sent, exchange_rate, exchange_rate_cury, base_exchange, payment_method, comment,
-                ip, user_name, status, created_on)
+                ip, user_email, user_name, status, created_on)
             )
             db.commit()
-            flash("Your Post is successful!")
+
+            flash("Your Post is successful!", "alert-success")
             return redirect(url_for('forex.index'))
 
     return render_template('forex/create.html')
@@ -189,15 +182,18 @@ def post_comment():
            
         else:
             user_id = 'NONE'
+            guest ='guest_'
             user_name = request.form.get('user_name')
+            user_name = '{}_{}'.format(guest, user_name)  #append guest to the user_name 
             email = request.form.get('email')
-            user_name_and_email = ''
+            user_name_and_email = '' #make show/require user_name and email form in template
 
         error          = None
 
         ip      = client_ip()
         status  = 'ACTIVE'
         created_on = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        thread_id = get_thread_id(request.referrer)
 
 
         if not user_name:
@@ -208,22 +204,32 @@ def post_comment():
         elif not comment:
             error = 'Please write a comment.'
         elif not get_thread_id(request.referrer):
-            error = "Issue with your request, please try again"
+            error = "Issue with your request, please try again later"
         
-     
-
         if error is not None:
             flash(error)
         else:
             db = get_db()
-            thread_id = get_thread_id(request.referrer)
-            avatar = PostComment.avatar(email, 128)
-            post_comment = PostComment.post_comment(db, comment, thread_id, created_on,
+            avatar = PostComment.avatar(email, 64)
+            post_comment = PostComment.post_comment(db, comment, user_id, thread_id, created_on,
             user_name, email, status, ip, avatar )
 
-            #flash(testing)
+            #Notifying users about the comment
+            comment_users = PostComment.get_forex_thread_comment_users(db, thread_id)
+            thread_owner_user_name = session.get('thread_owner_user_name')
+            thread_owner_email = session.get('thread_owner_email')
+            
+            
+            message = "Follow the link to view: " + request.referrer
 
-            flash("Your comment is successful!")
+            #email commenters 
+            send_mails(comment_users, message)
+            flash("Your comment is successful!", "alert-success")
+
+            #mail thread owner or stop if the email is contained in comment_users list
+            for comment_user in comment_users:
+                mail_thread_owner(thread_owner_user_name, thread_owner_email, message) if thread_owner_email  in  comment_user else {} 
+
 
 
         return redirect(request.referrer)
@@ -261,13 +267,96 @@ def get_comment():
             # Fetch a single forex_thread_post
             forex_thread_single = PostComment.get_forex_thread_single(db, url_thread_id)
             forex_thread_comment = PostComment.get_forex_thread_comment(db, url_thread_id)
+
+            #get the email and user name of the thread poster 
+            thread_owner_email = forex_thread_single['email']
+            thread_owner_user_name = forex_thread_single['user_name']
+            session['thread_owner_email'] = thread_owner_email
+            session['thread_owner_user_name'] = thread_owner_user_name
+
             ## Add an if statement to catch error in "forex_thread_single" and "forex_thread_comment"
-            #flask(testing)
             return render_template('forex/get_comment.html',  forex_thread_single = forex_thread_single,
              forex_thread_comment = forex_thread_comment, user_name_and_email = user_name_and_email,
               input_required = input_required,  len = len(forex_thread_comment))
 
 
     return redirect(request.referrer)
+@login_required
+@bp.route('/user_forex', methods=('GET', 'POST'))
+def user_forex():
+    
+    if  request.method == 'GET':
+        user_forex_thread = ForexThread(get_db()).get_user_forex_thread(session['user_id'])
+
+        return render_template('forex/user_forex.html', user_forex_thread= user_forex_thread)
+
+            
+@bp.route('/dash', methods=('GET', 'POST')) 
+def dash():
+        url_limit = 10
+        url_off_set = 10
+
+        if request.args.get('limit') and request.args.get('offset'):
+            url_limit = request.args.get('limit')
+            url_off_set = request.args.get('offset')
+
+        users = AppAdmin.get_users(get_db(), url_limit, url_off_set)
+        comments = AppAdmin.get_coms(get_db(), url_limit, url_off_set)
+
+
+        if  request.method == 'POST':
+            if request.form['bt_delete'] == 'Delete2':
+                url_thread_id=request.form['thread_id']
+                url_thread_id =  int(url_thread_id)
+                url_user_name = request.form['user_name']
+                result = AppAdmin.del_coms_thrd_user(get_db(), url_thread_id, url_user_name)
+                if result:
+                    flash('Success!')
+                    return redirect(request.referrer)
+                else:
+                    flash('Failed to Delete!')
+                    return redirect(request.referrer)
+
+            
+            elif request.form['bt_delete'] == 'Delete1':
+                url_user_name = request.form['user_name']
+                result = AppAdmin.del_coms_user(get_db(), url_user_name)
+                if result:
+                    flash(result)
+                    return redirect(request.referrer)
+                else:
+                    flash('Failed to Delete!')
+                    return redirect(request.referrer)
+
+            elif request.form['bt_delete'] == 'DeleteID':
+                comment_id = request.form['comment_id']
+                result = AppAdmin.del_coms_id(get_db(), comment_id)
+                if result:
+                    flash('Success!')
+                    return redirect(request.referrer)
+                else:
+                    flash('Failed to Delete!')
+                    return redirect(request_referrer)
+        return render_template('dashboard.html', users= users, comments=comments)
+
+#Delet comment by user_name and user ID
+@bp.route('/del_coms_2', methods=('GET','POST'))
+def del_coms_2():
+    return print("Mr valide Response")
+
+
+
+   
+            #url_thread_id = request.args.get('thread_id')
+            #url_thread_id = int(url_thread_id)
+            #url_user_name = request.args.get('user_name')
+
+    #print(url_thread_id)
+
+            
+
+
+     
+    
 
                 
