@@ -13,7 +13,7 @@ class ForexThread():
         self.db = db
        # db = get_db()
 
-    def get_forex_thread(self, url_limit=100, url_off_set=100):
+    def get_forex_thread(self, url_limit, url_off_set):
        
         forex_thread = self.db.execute(
         'SELECT u.first_name, ft.base_currency, ft.quote_currency, ft.exchange_rate_cury, ft.base_exchange, ft.amount, ft.exchange_rate, ft.payment_method, \

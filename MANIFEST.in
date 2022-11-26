@@ -1,0 +1,3 @@
+include switchfx/schema.sql
+graft flask/templates
+global-exclude *.pyc

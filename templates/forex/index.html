@@ -36,7 +36,7 @@
                   <td>{{ forex_threads['base_currency'] }}</td>
                   <td>{{ forex_threads['quote_currency'] }}</td>
                   <td>1 {{ forex_threads['base_currency'] }} = {{ forex_threads['exchange_rate'] }} {{ forex_threads['exchange_rate_cury'] }}</td>
-                  <td>{{ forex_threads['amount'] }}({{ forex_threads['quote_currency'] }})</td>
+                  <td>{{ forex_threads['amount'] }} {{ forex_threads['quote_currency'] }}</td>
                   <td>{{ forex_threads['payment_method'] }}</td>
                   <td>{{ forex_threads['comment'] }}</td>
                   <td> <a class="action" href="{{ url_for('forex.get_comment') }}?thread_id={{forex_threads['id']}}">Trade</a></td>
@@ -55,17 +55,17 @@
             <li class="page-item"><a class="page-link" href="{{ url_for('index') }}">Home</a></li>
            <!-- <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=5&offset={{link_array[0]}}&prev={{link_array[0]}}">Previous</a></li> -->
             <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=100">1</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=200}}">2</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=300}}">3</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=400}}">4</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=500}}">5</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=600}}">6</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=700}}">7</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=200">2</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=300">3</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=400">4</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=500">5</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=600">6</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=700">7</a></li>
 
-            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=800}}">8</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=800">8</a></li>
 
-            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=900}}">9</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=1000}}">10</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=900">9</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('index') }}?limit=100&offset=1000">10</a></li>
 
 
 
