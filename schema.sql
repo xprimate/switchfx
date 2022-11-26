@@ -29,6 +29,7 @@ CREATE TABLE `forex_thread` (
   `payment_method` NOT NULL,
   `comment`,
   `ip`,
+  'email',
   `user_name` NOT NULL,
   `status`,
   `created_on`,
