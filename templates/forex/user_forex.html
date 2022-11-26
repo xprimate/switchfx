@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<div class="container" id="container">
+  <h1>{% block title %}Foreign Exchange{% endblock %}</h1>
+</div>
+  
+{% endblock %}
+
+{% block content %}
+        <div class="p-2">
+
+          
+          <div class="container about">
+         
+            <!--  List of forex post-->
+            <table class="table  table-striped table-bordered">
+              <thead>
+                
+                <tr>
+              
+                  <th scope="col">Exchange</th>
+                  <th scope="col">For</th>
+                  <th scope="col">Exchange rate</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Pay method</th>
+                  <th scope="col">Note</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Trade</th>
+                
+
+                </tr>
+              </thead>
+              <tbody class="table-striped">
+                {% for user_forex_threads in user_forex_thread %}
+                <tr>
+               
+                  <td>{{ user_forex_threads['base_currency'] }}</td>
+                  <td>{{ user_forex_threads['quote_currency'] }}</td>
+                  <td>1 {{ user_forex_threads['base_currency'] }} = {{ user_forex_threads['exchange_rate'] }} {{ user_forex_threads['exchange_rate_cury'] }}</td>
+                  <td>{{ user_forex_threads['amount'] }}({{ user_forex_threads ['quote_currency'] }})</td>
+                  <td>{{ user_forex_threads['payment_method'] }}</td>
+                  <td>{{ user_forex_threads['comment'] }}</td>
+                  <td>{{ user_forex_threads['created_on'] }}</td>
+                  <td> <a class="action" href="{{ url_for('forex.get_comment') }}?thread_id={{user_forex_threads['id']}}">Trade</a></td>
+
+                  {% endfor %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+       
+        </div>
+
+        {% endblock %}
