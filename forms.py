@@ -2,23 +2,29 @@ from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, BooleanField, SubmitField, DateField, DateTimeField, 
 DateTimeLocalField, TimeField, MonthField, FloatField, IntegerField, DecimalRangeField, IntegerRangeField,
 EmailField, URLField, TelField, FileField, RadioField, SelectField, SelectMultipleField, TextAreaField,
-SearchField, StringField, PasswordField, BooleanField, SubmitField)
-from wtforms.validators import DataRequired
+SearchField, StringField, PasswordField, BooleanField, SubmitField, validators )
+from wtforms.validators import DataRequired, Email
 
 class LoginForm(FlaskForm):
-    user_name = StringField('username', validators=[DataRequired()])
-    password = PasswordField('password', validators=[DataRequired()])
-    remember = BooleanField('Remember me')
+    user_name = StringField('username', [validators.DataRequired(), validators.Length(min=3, max=15) ])
+    password = PasswordField('password',[validators.DataRequired(), validators.Length(min=4, max=35) ])
     submit = SubmitField('Sign In')
 
 class RegisterForm(FlaskForm):
-    user_name = StringField('Username', validators=[DataRequired()])
-    email = EmailField('Email')
-    first_name = StringField('First Name')
+    user_name = StringField('Username', [
+    validators.DataRequired(), validators.Length(min=4, max=15) ])
+    email = EmailField('Email', [validators.Length(min=4, max=35)])
+    first_name = StringField('First Name',[validators.DataRequired(), validators.Length(min=2, max=15) ])
     last_name = StringField('Last Name')
-    password = PasswordField('Password')
-    password = PasswordField('password', validators=[DataRequired()])
-    submit = SubmitField('Sign In')
+    password = PasswordField('Password', [validators.DataRequired(), validators.Length(min=4, max=35) ])
+    submit = SubmitField('Register')
+
+
+class ResetEmailForm(FlaskForm):
+    email = EmailField('Type  your email', [validators.DataRequired(),validators.Length(min=4, max=35)])
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Type your new Password', [validators.DataRequired(), validators.Length(min=4, max=35) ])
 
 
 
