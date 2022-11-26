@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
 {% block header %}
+<div class="container" id="container">
   <h1>{% block title %}Post your Foreign Exchange{% endblock %}</h1>
   <br>
+  </div>
 {% endblock %}
 
 <!-- Exchange thread post starts -->
@@ -20,10 +22,41 @@
         <label for="base_currency" class="form-label">Exchange</label>
         <select id="base_currency" required class="form-select" name="base_currency" >
           <option selected value="non">Choose Currency</option>
-          <option value="dollar">USD(US Dollar)</option>
-           <option value="naira">NGN(Nigeria Naira)</option>
-            <option value="cad">CAD(Canadian Dollar)</option>
-             <option value="gbp">GBP(British Pounds)</option>
+          <option value="USD">USD(US Dollar)</option>
+           <option value="NGN">NGN(Nigeria Naira)</option>
+            <option value="CAD">CAD(Canadian Dollar)</option>
+             <option value="GBP">GBP(British Pounds)</option>
+             <option value="YEN">JPY(Japanese Yen)</option>
+              <option value="EUR">EUR(Europian Euro)</option>
+                <option value="CNY">CNY(Chinese Yuan)</option>
+                <option value="AED">AED(UAE Dirham)</option>
+                    <option value="TRY">TRY(Turkish Lira)</option>
+                    <option value="TWD">TWD(New Taiwan Dolla)</option>
+                    <option value="SGD">SGD(Singapore Dollar)</option>
+                    <option value="RUB">RUB(Russian Ruble)</option>
+                    <option value="SAR">SAR(Saudi Arabian Riyal)</option>
+                    <option value="QAR">QAR(Qatari Riyal)</option>
+                    <option value="PHP">PHP(Philippine Peso)</option>
+                    <option value="MYR">MYR(Malaysian Ringgit)</option>
+                    <option value="JPY">JPY(Japanese Yen)</option>
+                    <option value="ILS">ILS(Israeli New Shekel)</option>
+                    <option value="IRR">IRR(Iranian Rial)</option>
+                    <option value="INR">INR(Indian Rupee)</option>
+                    <option value="AUD">AUD(Australian Rollar)</option>
+                    <option value="XAF">XAF(CFA Franc)</option>
+                    <option value="XOF">XOF(CFA Franc)</option>
+                    <option value="EGP">EGP(Egyptian Pound)</option>
+                    <option value="ERN">ERN(Eritrean Nakfa)</option>
+                    <option value="ETB">ETB(Ethiopian Birr)</option>
+                    <option value="GHS">GHS(Ghanaian Cedi)</option>
+                    <option value="KES">KES(Kenyan Shilling)</option>
+                    <option value="KMF">KMF(Comorian Franc)</option>
+                    <option value="ZAR">ZAR(South African Rand)</option>
+                    <option value="CHF">CHF(Swiss Franc)</option>
+                    <option value="COP">COP(Colombian Peso)</option>
+                    <option value="BRL">BRL(Brazilian Real)</option>
+                    <option value="VES">VES(Venezuelan Bolivar)</option>
+                    <option value="MXN">MXN(Mexican Peso)</option>
         </select>
       </div>
     
@@ -31,10 +64,41 @@
         <label for="quote_currency" class="form-label">For</label><br>
         <select id="quote_currency" required class="form-select" name="quote_currency" onchange="amountToBeSent()">
           <option selected value="non">Choose Currency</option>
-         <option value="dollar">USD(US Dollar)</option>
-           <option value="naira">NGN(Nigeria Naira)</option>
-            <option value="cad">CAD(Canadian Dollar)</option>
-             <option value="gbp">GBP(British Pounds)</option>
+          <option value="USD">USD(US Dollar)</option>
+           <option value="NGN">NGN(Nigeria Naira)</option>
+            <option value="CAD">CAD(Canadian Dollar)</option>
+             <option value="GBP">GBP(British Pounds)</option>
+             <option value="YEN">JPY(Japanese Yen)</option>
+              <option value="EUR">EUR(Europian Euro)</option>
+                <option value="CNY">CNY(Chinese Yuan)</option>
+                <option value="AED">AED(UAE Dirham)</option>
+                    <option value="TRY">TRY(Turkish Lira)</option>
+                    <option value="TWD">TWD(New Taiwan Dolla)</option>
+                    <option value="SGD">SGD(Singapore Dollar)</option>
+                    <option value="RUB">RUB(Russian Ruble)</option>
+                    <option value="SAR">SAR(Saudi Arabian Riyal)</option>
+                    <option value="QAR">QAR(Qatari Riyal)</option>
+                    <option value="PHP">PHP(Philippine Peso)</option>
+                    <option value="MYR">MYR(Malaysian Ringgit)</option>
+                    <option value="JPY">JPY(Japanese Yen)</option>
+                    <option value="ILS">ILS(Israeli New Shekel)</option>
+                    <option value="IRR">IRR(Iranian Rial)</option>
+                    <option value="INR">INR(Indian Rupee)</option>
+                    <option value="AUD">AUD(Australian Rollar)</option>
+                    <option value="XAF">XAF(CFA Franc)</option>
+                    <option value="XOF">XOF(CFA Franc)</option>
+                    <option value="EGP">EGP(Egyptian Pound)</option>
+                    <option value="ERN">ERN(Eritrean Nakfa)</option>
+                    <option value="ETB">ETB(Ethiopian Birr)</option>
+                    <option value="GHS">GHS(Ghanaian Cedi)</option>
+                    <option value="KES">KES(Kenyan Shilling)</option>
+                    <option value="KMF">KMF(Comorian Franc)</option>
+                    <option value="ZAR">ZAR(South African Rand)</option>
+                    <option value="CHF">CHF(Swiss Franc)</option>
+                    <option value="COP">COP(Colombian Peso)</option>
+                    <option value="BRL">BRL(Brazilian Real)</option>
+                    <option value="VES">VES(Venezuelan Bolivar)</option>
+                    <option value="MXN">MXN(Mexican Peso)</option>
         </select>
       </div>
     
@@ -68,7 +132,7 @@
       
       <!-- Send options start -->
       <div class="col-md-12">
-        <label for="payment_option" class="form-label">Payment Options:</label>
+        <label for="payment_option" class="form-label">Exchange Payment Options:</label>
       
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="checkbox"  id="bank_deposit" name="payment" value="Bank Deposit">
@@ -100,7 +164,7 @@
     
       <div class="col-12 ml-4" id="comDiv">
         <label for="comment">Note</label>
-        <textarea class="form-control" id="comment" rows="3" placeholder="Additional information" name="comment"></textarea>
+        <textarea class="form-control" id="comment" rows="3" placeholder="Additional information" name="comment" maxlength="200"></textarea>
       </div>
     
       
