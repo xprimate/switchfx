@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+
+{% block header %}
+<div class="container">
+  <h1>{% block title %}New Password{% endblock %}</h1>
+  <br>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container" id="container">
+<form action="{{ url_for('auth.resetpwd', token=token) }}" method="POST">
+    <h4>Type your new Password</h4>{{ form.password }}<br>
+    {{ form.csrf_token }}
+    <br>
+    <input type="submit"  class="btn btn-primary"  value="Change my password" />
+</form>
+</div>
+{% endblock %}
+
