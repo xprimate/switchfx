@@ -1,11 +1,11 @@
-from setuptools import find_packages, setuptools
+from setuptools import find_packages, setup
 
 setup(
-    name='Paidin',
+    name='switchfx',
     version='1.0.0',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'switchfx',
+        'flask',
         ],
 )
