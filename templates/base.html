@@ -14,44 +14,108 @@
         {% endblock %}
        
 
-<title>{% block title %}{% endblock %} - SwitchFX</title>
+<title>{% block title %}{% endblock %} - Paidin</title>
 </head>
 
-
-{% from 'bootstrap5/nav.html' import render_nav_item %}
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="navbar-nav mr-auto">
-        {{ render_nav_item('index', 'Home') }}
-        {{ render_nav_item('auth.register', 'Signup') }}
-        {{ render_nav_item('auth.login', 'Login') }}
-        {{ render_nav_item('forex.create', 'Post Forex') }}
-        {{ render_nav_item('auth.logout', 'Logout') }}
+    <div class="container">
+            <span class="navbar-brand mb-0 h1">Paidin</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav  mb-2 mb-lg-0">
+           
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{{ url_for('index') }}">Home</a>
+          </li>
+         
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('forex.create') }}">Exchange Currency</a>
+          </li>
+
+          {% if  g.user %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+          </li>
+          {% endif %}
+          <li class="nav-item ">
+            <a class="nav-link" href="{{ url_for('auth.register') }}">Signup</a>
+          </li>
+          
+         
+        <!--   Search box  
+        <form class="d-flex  ">
+          <input class="form-control " type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-secondary" type="submit">Search</button>
+        </form>
+      -->
+      </div>
     </div>
-</nav>
-
+    {% if  g.user %} 
+    <span class="text-center">| {{ session['user_name'] }} | {{session['user_firstname']}} {{session['user_lastname']}} | {{session['email']}}
+      | <a style=" color: black;" href="{{ url_for('forex.user_forex') }}"> MyPosts</a>  
+      {% else %} 
+      {% endif %}
+    </span>
+   
+  </nav>
 <body class="bg-light">
-
+<br><br>
 
     <header>
+   
         {% block header %}{% endblock %}
     </header>
     <!-- Errors -->
-    {% for message in get_flashed_messages() %}
-    <div class="flash container">
-        <div class="alert alert-warning d-flex align-items-center" role="alert">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+    <div>
+        <div class=" d-flex align-items-center" role="alert">
             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
         <div>
-            {{ message }} 
+            <ul class="flash container">
+                {% for category, message in messages %}
+                <li class=" alert {{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
         </div>
         </div>
     </div>
 
-    {% endfor %}
     {% block content %}{% endblock %}
 
-   
+    
+    
+
+    {% block scripts %}
+    <!-- Optional JavaScript -->
+    {{ bootstrap.load_js() }}
+    {% endblock %}
+
+     <!-- footer--><br><br>
+     <footer class="py-3 my-4" >
+      <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+        <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link px-2 text-muted">Home</a></li>
+        <li class="nav-item"><a href="{{ url_for('auth.register') }}" class="nav-link px-2 text-muted">Signup</a></li>
+        <li class="nav-item"><a href="{{ url_for('forex.create') }}" class="nav-link px-2 text-muted">Exchange</a></li>
+        <li class="nav-item"><a href="{{ url_for('auth.login') }}" class="nav-link px-2 text-muted">Login</a></li>
+        <li class="nav-item"><a href="{{ url_for('auth.logout') }}" class="nav-link px-2 text-muted">Logout</a></li>
+      </ul>
+      
+
+      <p class="text-center text-muted">
+        <img src="{{ url_for('static', filename='email.png') }}" >
+        © 2022 PaidIn</p>
+    </footer>
 
 
+  
 </body>
 </html>
