@@ -3,8 +3,10 @@
 
 
 {% block header %}
+<div class="container" id="container">
   <h1>{% block title %}Exchange{% endblock %}</h1>
   <br>
+</div>
 {% endblock %}
 
 {% block content %}  
@@ -35,7 +37,7 @@
 				<th>{{ forex_thread_single['user_name'] }}</th>
 				<td>{{ forex_thread_single['base_currency'] }}</td>
 				<td>{{ forex_thread_single['quote_currency'] }}</td>
-				<td>{{ forex_thread_single['exchange_rate'] }}/{{ forex_thread_single['exchange_rate_cury'] }}</td>
+				<td>1 {{ forex_thread_single['base_currency'] }} = {{ forex_thread_single['exchange_rate'] }} {{ forex_thread_single['exchange_rate_cury'] }}</td>
 				<td>{{ forex_thread_single['amount'] }}({{ forex_thread_single['quote_currency'] }})</td>
 				<td>{{ forex_thread_single['payment_method'] }}</td>
 				<td>{{ forex_thread_single['comment'] }}</td>
@@ -53,7 +55,7 @@
 	<form action="{{ url_for('forex.post_comment') }}" id="post_comment"  method="POST" class="d-flex justify-content-end">
 		<div class="col-md-6 row " >
 		<div class="col-md-6  ">
-			<input {{ user_name_and_email }} class="form-control" id="user_name" {{ input_required }} name="user_name" placeholder="User Name" >
+			<input {{ user_name_and_email }} class="form-control" id="user_name" {{ input_required }} name="user_name" placeholder="User Name" maxlength="200">
 		  </div>
 		
 		  <div class="col-md-6">
@@ -75,11 +77,14 @@
 	<div>
 	<h1 class="comments-title">Comments ({{ len }})</h1><!-- comment count from database-->
 
+	
 	{% if forex_thread_comment %}
 	<div class="be-comment-content">
-		<div class="be-img-comment">	
-			{% for forex_thread_comments in forex_thread_comment %}
-				<img src="{{ forex_thread_comments['avatar'] }}" alt="user_avatar" class="be-ava-comment"><!--avatar url from db-->
+		
+		{% for forex_thread_comments in forex_thread_comment %}
+		<div >	
+			
+				<img src="{{ forex_thread_comments['avatar'] }}" class="be-img-comment" alt="user_avatar" ><!--avatar url from db-->
 		</div>
 		<div class="be-comment-content">
 			
