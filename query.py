@@ -13,17 +13,22 @@ class ForexThread():
         self.db = db
        # db = get_db()
 
-    def get_forex_thread(self, lm=5, of=0):
-        lm = lm
-        of =of
+    def get_forex_thread(self, url_limit=100, url_off_set=100):
+       
         forex_thread = self.db.execute(
         'SELECT u.first_name, ft.base_currency, ft.quote_currency, ft.exchange_rate_cury, ft.base_exchange, ft.amount, ft.exchange_rate, ft.payment_method, \
         ft.comment, ft.user_name, ft.created_on, ft.id'
         ' FROM forex_thread ft JOIN user u ON ft.user_id=u.id'
-        ' ORDER BY ft.created_on DESC LIMIT ? OFFSET ? ', (lm,of,) 
+        ' ORDER BY ft.created_on DESC LIMIT ? OFFSET ? ', (url_limit,url_off_set,) 
         ).fetchall()
 
         return forex_thread
+
+    def get_user_forex_thread(self, user_id):
+        user_threads = self.db.execute(
+        'SELECT base_currency, quote_currency, exchange_rate_cury, base_exchange, amount, exchange_rate, payment_method, comment, \
+        created_on, id FROM forex_thread  WHERE  user_id = ? ORDER BY created_on DESC LIMIT ?', (user_id,100,)).fetchall()
+        return user_threads
 
     
 
@@ -34,7 +39,7 @@ class ForexThread():
         total = total + 40 # added to simulate large row count
         return total
     
-    def paginate(self, off_set=5, row_count=100, lm=10 ):
+    def paginate(self, off_set=100, row_count=5000, lm=100 ):
          link_array = list(range(off_set, row_count, lm))
          last_element = link_array[-1]
          #check to see if additonal element(offset) should be appended to the list
@@ -57,13 +62,13 @@ class ForexThread():
 
 class PostComment():
     
-    def post_comment(db, commment, thread_id, created_on,
+    def post_comment(db, commment, user_id, thread_id, created_on,
             user_name, email, status, ip, avatar):
         db.execute(
-        "INSERT INTO forex_thread_post (comment, thread_id, created_on, user_name,\
+        "INSERT INTO forex_thread_post (comment, thread_id, user_id, created_on, user_name,\
             email, status, ip, avatar)\
-            VALUES (?, ?, ?, ?, ?, ?, ?,?)",
-        (commment, thread_id, created_on, user_name, email, status, ip, avatar )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)",
+        (commment, thread_id, user_id, created_on, user_name, email, status, ip, avatar )
         )
         db.commit()
         return True
@@ -72,8 +77,13 @@ class PostComment():
         forex_thread_comment = db.execute('SELECT comment, created_on, user_name, status, avatar FROM \
          forex_thread_post WHERE thread_id = ? ORDER BY created_on  DESC LIMIT ? ', (thread_id, 100,)  ).fetchall()
         return forex_thread_comment
+    
+    def get_forex_thread_comment_users(db, thread_id):
+        forex_thread_comment_users = db.execute('SELECT DISTINCT user_name, email FROM forex_thread_post WHERE thread_id = ? ', (thread_id,)  ).fetchall()
+        return forex_thread_comment_users
 
-    def avatar(email='user@paidin.net', size=128):
+
+    def avatar(email='user@paidin.net', size=64):
             digest = md5(email.lower().encode('utf-8')).hexdigest()
             return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
                 digest, size)
