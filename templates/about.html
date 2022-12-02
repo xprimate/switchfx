@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+
+
+{% block header %}
+<div class="container" id="container">
+  <h1>{% block title %}About Paidin{% endblock %}</h1>
+ 
+</div>
+{% endblock %}
+
+{% block content %}  
+
+<div class="container">
+
+    <p>
+
+        Paidin is a peer to peer currency exchange platform, it conneects people who wants to exchange currencies,
+users are free to set their exchange rate and the amount they seek to exchange.
+<br><br>
+
+<strong>How it works:</strong> Brows the<a href="{{url_for('index')}}"> home-page</a> for active forex post, click on the "Trade" link to start communicating. 
+You can post your own currency exchange by <a href="{{url_for('auth.register')}}">registering </a> first.  <a href="{{url_for('auth.login')}}">Login </a>
+post your currency exchange by filling this <a href="{{url_for('forex.create')}}">form</a>: Select the currency you have from the "Exchange" drop-down and the currency you
+want to exchange from the "for" drop-down menu.
+Input the amount you want to exchange and your exchange rate. The converted amount will be shown.
+Check your desired payment options and add additional note if need be.
+<br>
+Interested users will reach you via the comment under the post, your  will get email notification when their is an update on your foreign exchange.
+<br><br>
+More feature like auto-bargain, wallet, escrow, auto-trade and many more are coming soon.
+<br>
+Please always do your due deligence before exchanging with users.
+
+
+    </p>
+	
+
+	
+</div>
+
+{% endblock %}

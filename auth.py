@@ -25,7 +25,10 @@ load_dotenv()
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-ts = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+# fix this security bug
+#ts = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+ts = URLSafeTimedSerializer('ezCyOb4muAn33Ie6VpuP9Q')
+
 
 
 #Client ip address
@@ -138,6 +141,12 @@ def logout():
     session.clear()
     return redirect(url_for('auth.login'))
 
+@bp.route('/about')
+def about():
+
+    return render_template('about.html')
+
+
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
@@ -158,7 +167,7 @@ def reset():
         #user = User.query.filter_by(email=form.email.data).first_or_404()
         users = db.execute(
             'SELECT email, first_name FROM user WHERE email = ?', (email,)
-        ).fetchone()
+        ).fetchall()
         
         if users is None:
             flash("Your email is not yet registered", "alert-warning")
