@@ -12,6 +12,7 @@ from switchfx.auth import client_ip
 from switchfx.db import get_db
 from switchfx.query import PostComment, ForexThread
 from switchfx.mail import send_mails, mail_thread_owner
+import time
 
 bp = Blueprint('forex', __name__)
 
@@ -162,6 +163,7 @@ def create():
                 ip, user_email, user_name, status, created_on)
             )
             db.commit()
+            
 
             flash("Your Post is successful!", "alert-success")
             return redirect(url_for('forex.index'))
@@ -223,13 +225,22 @@ def post_comment():
             message = "Follow the link to view: " + request.referrer
 
             #email commenters 
-            send_mails(comment_users, message)
+            
+            #convert to set to avoid duplicates
+            send_mails(set(comment_users), message)
             flash("Your comment is successful!", "alert-success")
 
             #mail thread owner or stop if the email is contained in comment_users list
             for comment_user in comment_users:
-                mail_thread_owner(thread_owner_user_name, thread_owner_email, message) if thread_owner_email  in  comment_user else {} 
+                #mail_thread_owner(thread_owner_user_name, thread_owner_email, message) if thread_owner_email  in  comment_user['email'] else {} 
+                if thread_owner_email  in  comment_user['email']:
+                    pass  
+                else:
+                    {
+                    mail_thread_owner(thread_owner_user_name, thread_owner_email, message)
+                    }
 
+            
 
 
         return redirect(request.referrer)
@@ -297,8 +308,8 @@ def user_forex():
 @bp.route('/wkno9g68zqhy13yd5kxl', methods=('GET', 'POST')) 
 @login_required   
 def wkno9g68zqhy13yd5kxl():
-        url_limit = 10
-        url_off_set = 10
+        url_limit = 100
+        url_off_set = 0
 
         if request.args.get('limit') and request.args.get('offset'):
             url_limit = request.args.get('limit')

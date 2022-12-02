@@ -5,6 +5,7 @@ from flask_mail import Message
 from flask_mail import Mail
 from switchfx import mail_obj
 
+
 bp = Blueprint('mail', __name__)
 def send_email(to, subject):
     msg = Message(
@@ -32,6 +33,7 @@ def mail_thread_owner(thread_owner_user_name, thread_owner_email, message):
     
  
 def send_mails(users, message):
+   
     with mail_obj.connect() as conn:
         for user in users:
            # message = 'Follow the link to view'
