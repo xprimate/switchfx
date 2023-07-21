@@ -33,7 +33,23 @@ class AppAdmin():
         db.commit()
         return True
         # find a way to confirm that the commite is succesfull
+    def del_forex_thread(db, thread_id):
+        db.execute('DELETE FROM forex_thread WHERE id = ?', (thread_id,))
+        db.execute('DELETE FROM forex_thread_post WHERE thread_id = ?', (thread_id,))
+        db.commit()
+        return True
+
+    def archive_thread(db, thread_id):
+        status = 'INACTIVE'
+        db.execute('UPDATE forex_thread SET status = ? WHERE id = ?', (status, thread_id,))
+        db.commit()
+        return True
         
+    def delete_user(db, user_id):
+        db.execute('DELETE FROM user WHERE id = ?', (user_id,))
+        db.commit()
+        return True
+
     
     def get_coms(db, limit, offset):
         comments = db.execute("SELECT * FROM forex_thread_post ORDER BY created_on  DESC LIMIT ? OFFSET ?",(limit, offset,)).fetchall()

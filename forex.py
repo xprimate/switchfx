@@ -344,14 +344,47 @@ def wkno9g68zqhy13yd5kxl():
                     return redirect(request.referrer)
 
             elif request.form['bt_delete'] == 'DeleteID':
-                comment_id = request.form['comment_id']
+                comment_id = int(request.form['comment_id'])
                 result = AppAdmin.del_coms_id(get_db(), comment_id)
+                if result:
+                    flash('Success!')
+                    return redirect(request.referrer)
+                    flash('Sorry, Unable to Delete')
+                else:
+                    flash('Failed to Delete!')
+                    return redirect(request_referrer)
+            
+            elif request.form['bt_delete'] == 'DeleteThread':
+                thread_id = int(request.form['forex_thread_id'])
+                result = AppAdmin.del_forex_thread(get_db(), thread_id)
                 if result:
                     flash('Success!')
                     return redirect(request.referrer)
                 else:
                     flash('Failed to Delete!')
                     return redirect(request_referrer)
+            
+            elif request.form['bt_delete'] == 'ArchiveThread':
+                thread_id = int(request.form['forex_thread_archive'])
+                result = AppAdmin.archive_thread(get_db(), thread_id)
+                if result:
+                    flash('Success!')
+                    return redirect(request.referrer)
+                else:
+                    flash('Failed to Delete!')
+                    return redirect(request_referrer)
+            
+            elif request.form['bt_delete'] == 'DeleteUser':
+                user_id = int(request.form['user_id'])
+                result = AppAdmin.delete_user(get_db(), user_id)
+                if result:
+                    flash('Success!')
+                    return redirect(request.referrer)
+                else:
+                    flash('Failed to Delete!')
+                    return redirect(request_referrer)
+
+
         return render_template('dashboard.html', users= users, comments=comments)
 
 #Delet comment by user_name and user ID

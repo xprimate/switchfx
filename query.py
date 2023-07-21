@@ -18,8 +18,9 @@ class ForexThread():
         forex_thread = self.db.execute(
         'SELECT u.first_name, ft.base_currency, ft.quote_currency, ft.exchange_rate_cury, ft.base_exchange, ft.amount, ft.exchange_rate, ft.payment_method, \
         ft.comment, ft.user_name, ft.created_on, ft.id'
-        ' FROM forex_thread ft JOIN user u ON ft.user_id=u.id'
-        ' ORDER BY ft.created_on DESC LIMIT ? OFFSET ? ', (url_limit,url_off_set,) 
+        ' FROM forex_thread ft JOIN user u ON ft.user_id=u.id  '
+    
+        'WHERE ft.status = ? ORDER BY ft.created_on DESC LIMIT ? OFFSET ? ', ('ACTIVE', url_limit,url_off_set,) 
         ).fetchall()
 
         return forex_thread
